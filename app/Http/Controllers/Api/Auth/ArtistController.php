@@ -9,18 +9,19 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use App\Models\User;
+use App\Models\Artists;
 
-class AuthController extends Controller
+class ArtistController extends Controller
 {
 
 	/*
-	 * Register new user
+	 * Register new artists
 	*/
 	public function signup(Request $request) {
 		$validatedData = $request->validate([
 			'name' => 'required|string|max:255',
-			'email' => 'required|email|unique:users,email',
+            'business_name' => 'required|string|max:255',
+			'email' => 'required|email|unique:artists,email',
 			'address' => 'required|string|max:255',
 			'phone' => 'required|string|max:20',
 			'password' => 'required|min:6|confirmed',
@@ -28,7 +29,7 @@ class AuthController extends Controller
 
 		$validatedData['password'] = Hash::make($validatedData['password']);
 
-		if(User::create($validatedData)) {
+		if(Artists::create($validatedData)) {
 			return response()->json(null, 201);
 		}
 
@@ -44,7 +45,7 @@ class AuthController extends Controller
 			'password' => 'required',
 		]);
 
-		$user = User::where('email', $request->email)->first();
+		$user = Artists::where('email', $request->email)->first();
 
 		if (! $user || ! Hash::check($request->password, $user->password)) {
 			throw ValidationException::withMessages([
